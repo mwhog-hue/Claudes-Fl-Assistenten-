@@ -900,41 +900,7 @@ body.map-fullscreen-active { overflow: hidden; }
 </details>
 </div>
 </section>
-<div class="live-track-box" id="liveTrackBox">
-<div class="panel-head" style="margin-bottom:.4rem">
-<div><p class="eyebrow" style="margin:0 0 2px">Live-Aufzeichnung</p><strong>Eigenen Weg per GPS aufzeichnen</strong></div>
-<span class="status-pill neutral" id="liveTrackStatus">Nicht gestartet</span>
-</div>
-<details class="soft-details" style="margin:.2rem 0 .7rem"><summary>Erklärung zur Live-Aufzeichnung</summary><div class="details-body">Zeichnet den Weg dieses Geräts auf, nicht den Hundetracker. Die App versucht dabei, den Bildschirm wach zu halten. Wird das Gerät manuell gesperrt oder die App verlassen, kann Android/iOS die Aufzeichnung dennoch pausieren. „🔒 Sperren“ aktiviert deshalb einen abgedunkelten Bedienungsschutz innerhalb der App. Der eigene Weg erscheint auf der Gebietskarte und später bei Fund &amp; Erste Hilfe. Ungenaue GPS-Punkte über 30 m und unplausible Sprünge werden verworfen; den Track anschließend trotzdem kurz sichtprüfen.</div></details>
-<div class="live-track-stats" id="liveTrackStats">
-<div><span class="lts-label">Strecke</span><strong id="ltsDistance">0 m</strong></div>
-<div><span class="lts-label">Aktive Dauer</span><strong id="ltsDuration">00:00</strong></div>
-<div><span class="lts-label">Punkte</span><strong id="ltsPoints">0</strong></div>
-<div><span class="lts-label">GPS-Genauigkeit</span><strong id="ltsAccuracy">–</strong></div>
-<div><span class="lts-label">Verworfen</span><strong id="ltsSkipped">0</strong></div>
-<div><span class="lts-label">Aktueller Standort</span><strong id="ltsCoordinates">–</strong></div>
-</div>
-<div class="exam-clock mode-pruefung" id="examClockPanel">
-<div class="exam-clock-head"><div><b id="examClockCycle">Prüfungssuche 1</b><div class="hint" id="examClockStatus">Noch nicht gestartet.</div></div><strong class="exam-clock-time" id="examClockTime">--:--</strong></div>
-<div class="actions">
-<button class="exam-indication" disabled="" id="examIndicationBtn" type="button">🐕 Hund zeigt an – Prüfungszeit stoppen</button>
-<button class="exam-resume" hidden="" id="examResumeBtn" type="button">🤝 Übergabe abgeschlossen – nächste Suche starten</button>
-</div>
-<p class="hint" style="margin:7px 0 0">Die Prüfungsuhr ist von der GPS-Aufzeichnung getrennt. Anzeige/Fund stoppt nur die Suchzeit; der Track läuft bis zum Fund weiter.</p>
-</div>
-<div class="actions" style="margin-top:.6rem">
-<button class="secondary" id="liveTrackStart" type="button">▶ Aufzeichnung starten</button>
-<button class="ghost" disabled="" id="liveTrackPause" type="button">‖ Pause</button>
-<button class="ghost" disabled="" id="liveTrackStop" type="button">■ Beenden</button>
-<button class="ghost" disabled="" id="liveTrackLock" type="button">🔒 Sperren</button>
-<button class="ghost" disabled="" id="liveTrackExport" type="button">Track als GPX herunterladen</button>
-</div>
-<div class="actions" style="margin-top:.55rem">
-<button class="handover-button" disabled="" id="liveTrackHandover" type="button">🤝 Übergabe beginnen</button>
-</div>
-<details class="soft-details" style="margin:.55rem 0 0"><summary>Prüfungszeit, Übergabe und Pausen</summary><div class="details-body">Der Übergabe-Knopf protokolliert Übergabe und spätere Wiederaufnahme, ohne den Live-Track anzuhalten. Im Prüfungsmodus läuft davon getrennt die eingestellte Suchzeit je Person: Anzeige oder Fund stoppt sie; „Übergabe abgeschlossen“ startet die zweite Suchzeit neu. Stillstände ab fünf Minuten erkennt die App zusätzlich als mögliche Pausen.</div></details>
-<p aria-live="polite" class="hint" id="liveTrackMsg" style="margin:.5rem 0 0"></p>
-</div>
+<div class="soft-details" id="liveTrackHinweis" style="padding:12px 14px;margin:12px 0"><strong>📍 Eigenen Weg aufzeichnen</strong><p class="field-help" style="margin:.3rem 0 .6rem">Die Live-Aufzeichnung (GPS, Übergabe, Pausen, Prüfungszeit) finden Sie jetzt in <strong>Schritt 4 · Taktik</strong> unter dem Laufschema – dort, wo Sie entscheiden, wie Sie losgehen. Der aufgezeichnete Weg erscheint weiterhin hier auf der Gebietskarte.</p><button type="button" class="secondary" id="gotoLiveTrack">Zur Aufzeichnung →</button></div>
 <details class="soft-details">
 <summary>Gebiet genauer beschreiben</summary>
 <div class="field-grid details-body">
@@ -1087,13 +1053,15 @@ body.map-fullscreen-active { overflow: hidden; }
 <article class="result-card primary-result">
 <p class="card-kicker">Vorgehen &amp; Windbezug</p>
 <h3 id="strategyName">–</h3>
+<details class="soft-details" id="strategyStepsDetails"><summary id="strategyStepsSummary">Vorgehen Schritt für Schritt anzeigen</summary>
 <ol id="strategySteps"></ol>
 <details class="soft-details compact-more hidden" id="strategyMoreDetails"><summary id="strategyMoreSummary">Weitere Hinweise</summary><ol id="strategyMore"></ol></details>
+</details>
 </article>
 <article class="result-card wind-card">
 <p class="card-kicker">Windbild</p>
 <div class="big-compass"><span>N</span><b id="compassArrow">↑</b><small id="compassText">–</small></div>
-<p id="windAdvice"></p>
+<details class="soft-details" id="windAdviceDetails"><summary>Windbezug erläutern</summary><p id="windAdvice"></p></details>
 </article>
 <article class="result-card"><p class="card-kicker">Prioritäten</p><ul class="clean-list" id="priorities"></ul></article>
 <article class="result-card"><p class="card-kicker">Sicherheit &amp; Abbruch</p><ul class="clean-list warning-list" id="warnings"></ul></article>
@@ -1101,17 +1069,53 @@ body.map-fullscreen-active { overflow: hidden; }
 <section class="run-schema" id="runSchema">
 <div class="run-schema-head"><div><p class="card-kicker">Laufschema (Skizze)</p><h3 id="runSchemaTitle">–</h3><p class="hint" id="runSchemaSubtitle" style="margin:.2rem 0 0"></p></div><button class="ghost" id="runSchemaExpandBtn" type="button">🔍 Vergrößern</button></div>
 <div class="field" style="margin:10px 0 12px"><label for="resultSchemaType">Laufschema direkt ändern</label><select id="resultSchemaType"><option value="auto">automatisch passend zum Modus</option><option value="strips">systematische Streifen</option><option value="s_curve">durchgehende S-Linie</option><option value="perimeter_center">Rand einmal herum + mittig durch</option><option value="free_axis">freie Leitachse · Hund sucht selbständig</option></select><small class="field-help">Die Skizze wird sofort neu berechnet. Im Prüfungsmodus bleibt die zeitlich angepasste systematische Abdeckung Planungsgrundlage; im Training und Einsatz ist die Auswahl frei änderbar.</small></div>
-<div class="callout" id="schemaRecommendationBox" style="margin:0 0 12px"></div>
+<details class="soft-details" id="schemaRecDetails" style="margin:0 0 12px"><summary id="schemaRecSummary">Empfehlung &amp; Begründung zum Laufschema</summary><div class="callout" id="schemaRecommendationBox" style="margin:8px 0 0"></div></details>
 <div class="direction-frame run-schema-svg-wrap"><div id="runSchemaSvgWrap"></div><span class="edge-direction n">N</span><span class="edge-direction e">O</span><span class="edge-direction s">S</span><span class="edge-direction w">W</span></div>
 <div class="callout hidden" id="laneSpacingInfo" style="margin:10px 0 8px"></div>
 <div class="terrain-chips" id="runSchemaTerrainChips"></div>
 <div class="callout hidden" id="examTimePlan" style="margin:10px 0 12px"></div>
-<ul class="run-schema-legend" id="runSchemaLegend"></ul>
+<details class="soft-details" id="runSchemaLegendDetails"><summary>Legende zur Skizze</summary><ul class="run-schema-legend" id="runSchemaLegend"></ul></details>
 <details class="run-schema-notes">
 <summary>Wichtige Hinweise zum Laufschema</summary>
 <ul class="run-schema-note" id="runSchemaNote"></ul>
 </details>
 </section>
+<div class="live-track-box" id="liveTrackBox">
+<div class="panel-head" style="margin-bottom:.4rem">
+<div><p class="eyebrow" style="margin:0 0 2px">Live-Aufzeichnung</p><strong>Eigenen Weg per GPS aufzeichnen</strong></div>
+<span class="status-pill neutral" id="liveTrackStatus">Nicht gestartet</span>
+</div>
+<details class="soft-details" style="margin:.2rem 0 .7rem"><summary>Erklärung zur Live-Aufzeichnung</summary><div class="details-body">Zeichnet den Weg dieses Geräts auf, nicht den Hundetracker. Die App versucht dabei, den Bildschirm wach zu halten. Wird das Gerät manuell gesperrt oder die App verlassen, kann Android/iOS die Aufzeichnung dennoch pausieren. „🔒 Sperren“ aktiviert deshalb einen abgedunkelten Bedienungsschutz innerhalb der App. Der eigene Weg erscheint auf der Gebietskarte und später bei Fund &amp; Erste Hilfe. Ungenaue GPS-Punkte über 30 m und unplausible Sprünge werden verworfen; den Track anschließend trotzdem kurz sichtprüfen.</div></details>
+<div class="live-track-stats" id="liveTrackStats">
+<div><span class="lts-label">Strecke</span><strong id="ltsDistance">0 m</strong></div>
+<div><span class="lts-label">Aktive Dauer</span><strong id="ltsDuration">00:00</strong></div>
+<div><span class="lts-label">Punkte</span><strong id="ltsPoints">0</strong></div>
+<div><span class="lts-label">GPS-Genauigkeit</span><strong id="ltsAccuracy">–</strong></div>
+<div><span class="lts-label">Verworfen</span><strong id="ltsSkipped">0</strong></div>
+<div><span class="lts-label">Aktueller Standort</span><strong id="ltsCoordinates">–</strong></div>
+</div>
+<div class="exam-clock mode-pruefung" id="examClockPanel">
+<div class="exam-clock-head"><div><b id="examClockCycle">Prüfungssuche 1</b><div class="hint" id="examClockStatus">Noch nicht gestartet.</div></div><strong class="exam-clock-time" id="examClockTime">--:--</strong></div>
+<div class="actions">
+<button class="exam-indication" disabled="" id="examIndicationBtn" type="button">🐕 Hund zeigt an – Prüfungszeit stoppen</button>
+<button class="exam-resume" hidden="" id="examResumeBtn" type="button">🤝 Übergabe abgeschlossen – nächste Suche starten</button>
+</div>
+<p class="hint" style="margin:7px 0 0">Die Prüfungsuhr ist von der GPS-Aufzeichnung getrennt. Anzeige/Fund stoppt nur die Suchzeit; der Track läuft bis zum Fund weiter.</p>
+</div>
+<div class="actions" style="margin-top:.6rem">
+<button class="secondary" id="liveTrackStart" type="button">▶ Aufzeichnung starten</button>
+<button class="ghost" disabled="" id="liveTrackPause" type="button">‖ Pause</button>
+<button class="ghost" disabled="" id="liveTrackStop" type="button">■ Beenden</button>
+<button class="ghost" disabled="" id="liveTrackLock" type="button">🔒 Sperren</button>
+<button class="ghost" disabled="" id="liveTrackExport" type="button">Track als GPX herunterladen</button>
+</div>
+<div class="actions" style="margin-top:.55rem">
+<button class="handover-button" disabled="" id="liveTrackHandover" type="button">🤝 Übergabe beginnen</button>
+</div>
+<details class="soft-details" style="margin:.55rem 0 0"><summary>Prüfungszeit, Übergabe und Pausen</summary><div class="details-body">Der Übergabe-Knopf protokolliert Übergabe und spätere Wiederaufnahme, ohne den Live-Track anzuhalten. Im Prüfungsmodus läuft davon getrennt die eingestellte Suchzeit je Person: Anzeige oder Fund stoppt sie; „Übergabe abgeschlossen“ startet die zweite Suchzeit neu. Stillstände ab fünf Minuten erkennt die App zusätzlich als mögliche Pausen.</div></details>
+<p aria-live="polite" class="hint" id="liveTrackMsg" style="margin:.5rem 0 0"></p>
+</div>
+
 <section class="briefing">
 <div class="briefing-head"><div><p class="card-kicker">Kurzbriefing</p><h3>Direkt vor dem Start</h3></div><button class="secondary" id="copyBriefing" type="button">Kopieren</button></div>
 <div id="briefingText"></div>
@@ -1399,9 +1403,9 @@ body.map-fullscreen-active { overflow: hidden; }
 </div>
 <div class="bridge-box">
 <h3>Für Trainingstagebuch &amp; Einsatzprotokoll</h3>
-<p>Erstellt eine JSON-Datei mit Lage, Geometrie, Trackdaten und Abschlussauswertung. Sie kann im Trainingstagebuch und im Einsatzprotokoll jeweils über „RH-Flächensuchassistent-Daten einlesen“ übernommen werden. Alle Programme bleiben ohne Konto eigenständig nutzbar.</p>
+<p>Erstellt eine JSON-Datei mit Lage, Geometrie, Trackdaten und Abschlussauswertung. Sie kann im Trainingstagebuch und im Einsatzprotokoll jeweils über „Übergabe aus Flächensuchassistent einlesen“ übernommen werden. Alle Programme bleiben ohne Konto eigenständig nutzbar.</p>
 <div class="bridge-row">
-<button class="primary" id="exportBridge" type="button">⬇ Für Trainingstagebuch/Einsatzprotokoll exportieren (JSON)</button>
+<button class="primary" id="exportBridge" type="button">⬇ An Tagebuch / Einsatzprotokoll übergeben</button>
 </div>
 </div>
 <div class="actions result-actions"><button class="ghost prev" data-prev="4" type="button">← Zur Taktik</button><div><button class="secondary" id="saveScenario" type="button">Lokal speichern</button><button class="secondary" id="downloadScenario" type="button">⬇ Als Datei speichern</button><button class="secondary" id="printResult" type="button">Lage drucken / PDF</button><button class="primary next" data-next="6" type="button">Zur Abschlussauswertung →</button></div></div>
@@ -1520,7 +1524,7 @@ body.map-fullscreen-active { overflow: hidden; }
 <div class="dialog-choice-actions">
 <button class="primary" id="protocolThenNewCase" type="button">Einsatzprotokoll (.html) sichern und neu beginnen</button>
 <button class="primary" id="downloadThenNewCase" type="button">Lage-Datei sichern (.json) und neu beginnen</button>
-<button class="secondary" id="bridgeThenNewCase" type="button">Für Trainingstagebuch/Einsatzprotokoll exportieren und neu beginnen</button>
+<button class="secondary" id="bridgeThenNewCase" type="button">An Tagebuch / Einsatzprotokoll übergeben und neu beginnen</button>
 <button class="secondary" id="saveThenNewCase" type="button">Nur in diesem Browser speichern und neu beginnen</button>
 <button class="danger-button" id="discardThenNewCase" type="button">Ohne Sicherung zurücksetzen</button>
 <button class="secondary" type="submit" value="cancel">Abbrechen</button>
@@ -2351,7 +2355,7 @@ function loadExamDefaults(){
   try{ const d=JSON.parse(localStorage.getItem(EXAM_DEFAULTS_KEY)||'null'); if(!d)return; Object.entries(d).forEach(([k,v])=>setVal(k,v)); if($('#rememberExam'))$('#rememberExam').checked=true; }catch(e){}
 }
 function buildExamPresetFile(){ return {format:'rhs-exam-preset',schemaVersion:1,discipline:'flaeche',createdAt:new Date().toISOString(),data:examPresetData()}; }
-function exportExamPreset(){ downloadJSONFile(buildExamPresetFile(),'RHS_Pruefungsvorgaben_Flaeche'); }
+function exportExamPreset(){ downloadJSONFile(buildExamPresetFile(),'RHS_Pruefungsvorgaben_Flaechensuche'); }
 function importExamPresetFile(file){
   const r=new FileReader(); r.onload=()=>{ try{ const p=JSON.parse(r.result); if(p.format!=='rhs-exam-preset'||Number(p.schemaVersion)!==1)throw Error('Keine gültige RHS-Prüfungsvorlage.'); if(p.discipline!=='flaeche')throw Error('Diese Vorlage gehört zur Sparte '+p.discipline+'.'); Object.entries(p.data||{}).forEach(([k,v])=>{if(['examPreset','examLevel','examRule','examMinutes','examArea','examPersons'].includes(k))setVal(k,v)}); setVal('examPreset','custom'); syncSubjectCountForMode(); renderExamClock(); scheduleDraftSave(); showToast('Prüfungsvorgaben übernommen. Alle Werte bleiben änderbar.'); }catch(e){showToast(e.message||'Prüfungsvorlage konnte nicht gelesen werden.')} }; r.readAsText(file);
 }
@@ -6728,7 +6732,7 @@ function renderSavedList(){
   }).join('');
   $$('[data-dl]',box).forEach(b=> b.addEventListener('click', ()=>{
     const list=loadScenarios(); const s=list[Number(b.dataset.dl)]; if(!s) return;
-    downloadJSONFile(s, `RH-Flaechensuchassistent_Lage_${(s.label||'ohne-Namen').replace(/[^\w\-]+/g,'_')}`);
+    downloadJSONFile(s, `RHS_Lage_Flaechensuche_${(s.label||'ohne-Namen').replace(/[^\w\-]+/g,'_')}`);
     showToast('Datei erstellt – kann jetzt z. B. per Mail/Messenger weitergegeben werden.');
   }));
   $$('[data-load]',box).forEach(b=> b.addEventListener('click', ()=>{
@@ -6799,12 +6803,12 @@ $('#protocolThenNewCase').addEventListener('click', ()=>{
 });
 $('#downloadThenNewCase').addEventListener('click', ()=>{
   const file=buildScenarioFile(scenarioLabel(), collectFieldState());
-  downloadJSONFile(file, `RH-Flaechensuchassistent_Lage_${(file.label||'ohne-Namen').replace(/[^\w\-]+/g,'_')}`);
+  downloadJSONFile(file, `RHS_Lage_Flaechensuche_${(file.label||'ohne-Namen').replace(/[^\w\-]+/g,'_')}`);
   $('#newCaseDialog').close();
   resetCurrentCase();
 });
 $('#bridgeThenNewCase').addEventListener('click', ()=>{
-  downloadJSONFile(buildBridgeExport(), 'RH-Flaechensuchassistent_Trainingstagebuch-Export');
+  downloadJSONFile(buildBridgeExport(), flUebergabeName());
   $('#newCaseDialog').close();
   resetCurrentCase();
 });
@@ -6826,13 +6830,13 @@ $('#discardThenNewCase').addEventListener('click', ()=>{
    einlesen“ unten wieder vollständig einlesen (inkl. Suchgebiet, Track und Fundmeldungen). */
 $('#downloadScenario').addEventListener('click', ()=>{
   const file=buildScenarioFile(scenarioLabel(), collectFieldState());
-  downloadJSONFile(file, `RH-Flaechensuchassistent_Lage_${(file.label||'ohne-Namen').replace(/[^\w\-]+/g,'_')}`);
+  downloadJSONFile(file, `RHS_Lage_Flaechensuche_${(file.label||'ohne-Namen').replace(/[^\w\-]+/g,'_')}`);
   showToast('Datei erstellt – kann jetzt z. B. per Mail/Messenger weitergegeben werden.');
 });
 $('#printResult').addEventListener('click', ()=>{ renderResult(); window.print(); });
 $('#downloadEvaluation').addEventListener('click', ()=>{
   const payload={evaluationFormat:'rhs-flaechensuchassistent-evaluation',evaluationVersion:1,sourceApp:'RH-Flächensuchassistent',exportId:uid(),...buildEvaluationData()};
-  downloadJSONFile(payload,'RH-Flaechensuchassistent_Auswertung');
+  downloadJSONFile(payload,'RHS_Auswertung_Flaechensuche');
   showToast('Separate Abschlussauswertung gespeichert.');
 });
 $('#printEvaluation').addEventListener('click', ()=>{
@@ -6875,13 +6879,13 @@ function rhsNow(){return new Date().toISOString();}function rhsUid(){return 'rhs
 function rhsTeamFields(){return{handler:val('handlerName').trim(),dogName:val('presetDogName').trim(),indicationType:val('dogIndication'),unit:val('handlerUnit').trim()}}
 function rhsEnsureMeta(){let m=rhsLoadMeta(),changed=false;if(!m.teamId){m.teamId=rhsUid();changed=true}m.instanceId=m.instanceId||rhsUid();m.processedPackages=Array.isArray(m.processedPackages)?m.processedPackages.slice(-200):[];if(!m.fields)m.fields={};const f=rhsTeamFields();Object.keys(f).forEach(k=>{if(!m.fields[k]){m.fields[k]={revision:1,updatedAt:rhsNow(),sourceApp:RHS_APP_ID,sourceInstanceId:m.instanceId,value:f[k]};changed=true}else if(m.fields[k].value!==f[k]){m.fields[k]={revision:(Number(m.fields[k].revision)||0)+1,updatedAt:rhsNow(),sourceApp:RHS_APP_ID,sourceInstanceId:m.instanceId,value:f[k]};changed=true}});if(changed)rhsSaveMeta(m);return m}
 function rhsExportTeam(){flushDraftSave();const m=rhsEnsureMeta(),data={},fieldMeta={};Object.entries(m.fields).forEach(([k,x])=>{data[k]=(k==='disciplines'&&!Array.isArray(x.value))?String(x.value||'').split(/[,;\/]+/).map(v=>v.trim()).filter(Boolean):x.value;fieldMeta[k]={revision:Number(x.revision||0),updatedAt:x.updatedAt||'',sourceApp:x.sourceApp||RHS_APP_ID,sourceInstanceId:x.sourceInstanceId||m.instanceId}});return{rhsFormat:RHS_EXCHANGE_FORMAT,schemaVersion:2,packageType:'bundle',packageId:rhsUid(),createdAt:rhsNow(),source:{app:RHS_APP_ID,instanceId:m.instanceId},records:[{type:'team',id:m.teamId,data,fieldMeta}]}}
-function rhsDownloadTeam(){const data=rhsExportTeam(),blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='RHS_v2_Teamdaten_'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);showToast('RHS-Teamdaten exportiert.')}
+function rhsDownloadTeam(){const data=rhsExportTeam(),blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='RHS_Teamdaten_Flaechensuche_'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);showToast('RHS-Teamdaten exportiert.')}
 function rhsAnzeigeZuLabel(v){const t=String(v||'').trim().toLowerCase();if(!t)return'';if(/bell/.test(t))return'Verbeller';if(/frei/.test(t))return'Freiverweiser';if(/bring/.test(t))return'Bringsler';if(/r(ü|ue|u)ck|pendl|rv_/.test(t))return'Rückverweiser';return v}
 function rhsApplyField(k,v){const map={handler:'handlerName',dogName:'presetDogName',indicationType:'dogIndication',unit:'handlerUnit'};if(k==='indicationType')v=rhsAnzeigeZuLabel(v);if(map[k])setVal(map[k],v==null?'':v)}
 function rhsNormalize(data){if(!data||data.rhsFormat!==RHS_EXCHANGE_FORMAT)throw new Error('Keine RHS-Exchange-Datei.');if(Number(data.schemaVersion)>2)throw new Error('Neuere RHS-Exchange-Version noch nicht unterstützt.');if(Number(data.schemaVersion)===2&&Array.isArray(data.records))return data;const x=data.payload?.team;if(!x)throw new Error('Keine Team-Stammdaten enthalten.');const f=x.fields||{},v=(...ks)=>{for(const k of ks)if(f[k]&&f[k].value!==undefined)return f[k].value;return''},mm=(...ks)=>{for(const k of ks)if(f[k])return{revision:Number(f[k].revision||0),updatedAt:f[k].updatedAt||''};return{revision:0}};return{rhsFormat:RHS_EXCHANGE_FORMAT,schemaVersion:2,packageId:data.packageId||'',createdAt:data.createdAt||'',source:{app:data.sourceApp||'legacy-v1'},records:[{type:'team',id:x.teamId,data:{handler:v('handler'),dogName:v('dogName','dog'),dogBirthDate:v('dogBirthDate','geburtsdatum'),dogBreed:v('dogBreed','rasseFrei'),unit:v('unit'),disciplines:v('disciplines','sparte'),indicationType:v('indicationType','anzeigeart')},fieldMeta:{handler:mm('handler'),dogName:mm('dogName','dog'),dogBirthDate:mm('dogBirthDate','geburtsdatum'),dogBreed:mm('dogBreed','rasseFrei'),unit:mm('unit'),disciplines:mm('disciplines','sparte'),indicationType:mm('indicationType','anzeigeart')}}]}}
 function rhsImportTeam(raw){const data=rhsNormalize(raw),incoming=data.records.find(r=>r.type==='team');if(!incoming)throw new Error('Keine Team-Stammdaten enthalten.');const local=rhsEnsureMeta();if(data.packageId&&local.processedPackages.includes(data.packageId)){showToast('Dieses Austauschpaket wurde bereits verarbeitet.');return true}if(local.teamId&&incoming.id&&local.teamId!==incoming.id){if(!confirm('Andere Team-ID. Gehören beide Profile zum selben realen Team und sollen feldweise zusammengeführt werden?'))return false;/* keine lokalen Felder löschen */local.teamId=incoming.id}const inf=incoming.data||{},meta=incoming.fieldMeta||{};let changed=0,conflicts=0;Object.keys(inf).forEach(k=>{let iv=inf[k];if(k==='disciplines')iv=Array.isArray(iv)?iv:String(iv||'').split(/[,;\/]+/).map(x=>x.trim()).filter(Boolean);const im=meta[k]||{revision:0},cur=local.fields[k],ir=Number(im.revision||0),lr=Number(cur?.revision||0);if(cur&&JSON.stringify(cur.value)===JSON.stringify(iv))return;if(!cur||!cur.value||ir>lr){local.fields[k]={...im,revision:ir,value:iv};rhsApplyField(k,iv);changed++}else if(ir===lr){conflicts++;if(confirm('Konflikt bei „'+k+'“:\nLokal: '+(cur.value||'–')+'\nImport: '+(iv||'–')+'\nImportwert übernehmen?')){local.fields[k]={...im,revision:lr+1,updatedAt:rhsNow(),sourceApp:RHS_APP_ID,sourceInstanceId:local.instanceId,value:iv};rhsApplyField(k,iv);changed++}}});if(data.packageId)local.processedPackages.push(data.packageId);rhsSaveMeta(local);saveDraft();updateIntroScript();showToast(changed+' Teamangabe(n) übernommen'+(conflicts?' · '+conflicts+' Konflikt(e) geprüft':'')+'.');return true}
 function rhsHandleImport(file){const r=new FileReader();r.onload=()=>{try{rhsImportTeam(JSON.parse(r.result))}catch(e){showToast(e.message||'RHS-Datei konnte nicht gelesen werden.')}};r.readAsText(file)}
-function rhsAddExchangeUi(){const host=document.querySelector('#plannerForm');if(!host||document.getElementById('rhsExchangeBox'))return;const box=document.createElement('details');box.id='rhsExchangeBox';box.className='card';box.innerHTML='<summary><strong>RH App-Familie · Teamdaten</strong></summary><p class="field-help">RHS Exchange v2. Die Taktik-App bleibt vollständig eigenständig; ältere v1-Pakete können weiterhin eingelesen werden.</p><div class="button-row"><button type="button" class="secondary" id="rhsExportTeamBtn">Teamdaten exportieren</button><button type="button" class="secondary" id="rhsImportTeamBtn">Teamdaten importieren</button><input type="file" id="rhsImportTeamFile" accept="application/json,.json" hidden></div>';host.insertBefore(box,host.firstChild);document.getElementById('rhsExportTeamBtn').onclick=rhsDownloadTeam;document.getElementById('rhsImportTeamBtn').onclick=()=>document.getElementById('rhsImportTeamFile').click();document.getElementById('rhsImportTeamFile').onchange=e=>{const f=e.target.files[0];e.target.value='';if(f)rhsHandleImport(f)}}
+function rhsAddExchangeUi(){const host=document.querySelector('#plannerForm');if(!host||document.getElementById('rhsExchangeBox'))return;const box=document.createElement('details');box.id='rhsExchangeBox';box.className='card';box.innerHTML='<summary><strong>Teamdaten austauschen · RH-App-Familie</strong></summary><p class="field-help">RHS Exchange v2. Die Taktik-App bleibt vollständig eigenständig; ältere v1-Pakete können weiterhin eingelesen werden.</p><div class="button-row"><button type="button" class="secondary" id="rhsExportTeamBtn">Teamdaten exportieren</button><button type="button" class="secondary" id="rhsImportTeamBtn">Teamdaten importieren</button><input type="file" id="rhsImportTeamFile" accept="application/json,.json" hidden></div>';host.appendChild(box);document.getElementById('rhsExportTeamBtn').onclick=rhsDownloadTeam;document.getElementById('rhsImportTeamBtn').onclick=()=>document.getElementById('rhsImportTeamFile').click();document.getElementById('rhsImportTeamFile').onchange=e=>{const f=e.target.files[0];e.target.value='';if(f)rhsHandleImport(f)}}
 window.addEventListener('DOMContentLoaded',()=>{rhsEnsureMeta();rhsAddExchangeUi();});
 
 /* ============================================================
@@ -6977,13 +6981,15 @@ function buildBridgeExport(){
     } : null).filter(Boolean)
   };
 }
+/* Einheitlicher Dateiname der Übergabe: Einsatz → Uebergabe, sonst Training bzw. Pruefung */
+function flUebergabeName(){ return 'RHS_'+({einsatz:'Uebergabe',pruefung:'Pruefung',training:'Training'}[currentMode]||'Training')+'_Flaechensuche'; }
 $('#exportBridge').addEventListener('click', ()=>{
   const data=buildBridgeExport();
   const blob=new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
   const stamp=new Date().toISOString().replace(/[:T]/g,'-').slice(0,16);
-  a.href=url; a.download=`RH-Flaechensuchassistent_Export_${stamp}.json`;
+  a.href=url; a.download=`${flUebergabeName()}_${stamp}.json`;
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   URL.revokeObjectURL(url);
   showToast('JSON-Datei erstellt – im Trainingstagebuch/Einsatzprotokoll einlesen.');
@@ -7089,4 +7095,51 @@ function init(){
 init();
 </script>
 <script id="ux-compact-helper">(function(){function foldHeading(h){if(!h||h.closest("details")||h.dataset.uxFolded)return;var level=Number(h.tagName.slice(1)),parent=h.parentNode;if(!parent)return;var d=document.createElement("details");d.className="ux-help-details";var s=document.createElement("summary");s.textContent=h.textContent.trim();d.appendChild(s);h.dataset.uxFolded="1";var n=h.nextSibling;h.remove();while(n){var next=n.nextSibling;if(n.nodeType===1&&/^H[1-6]$/.test(n.tagName)&&Number(n.tagName.slice(1))<=level)break;d.appendChild(n);n=next;}parent.insertBefore(d,n);}function init(){var patterns=[/allgemeine grundsätze/i,/so liest du/i,/rassetypische hinweise/i,/lebensphase.*lernfähigkeit/i,/eigenwahrnehmung.*selbstcheck/i,/trainingsaufbau-checkliste/i,/was die app kann/i,/bedienungsanleitung/i,/tastenkürzel/i];Array.from(document.querySelectorAll("h2,h3,h4")).filter(function(h){return patterns.some(function(r){return r.test(h.textContent||"")})}).forEach(foldHeading);}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();})();</script>
+
+<script id="fl-ux-taktik">(function(){
+ function init(){
+  var b=document.getElementById('gotoLiveTrack');
+  if(b)b.onclick=function(){var s=document.querySelector('.step[data-step="4"]');if(s)s.click();setTimeout(function(){var t=document.getElementById('liveTrackBox');if(t)t.scrollIntoView({behavior:'smooth',block:'start'})},200)};
+  var ol=document.getElementById('strategySteps'),sum=document.getElementById('strategyStepsSummary');
+  if(ol&&sum){var upd=function(){var n=ol.children.length;sum.textContent=n?('Vorgehen Schritt für Schritt anzeigen ('+n+' Schritte)'):'Vorgehen Schritt für Schritt anzeigen'};upd();new MutationObserver(upd).observe(ol,{childList:true})}
+
+  // Punkt 4: Hinweis „vorläufig“ direkt in der Zusammenfassung der Empfehlung
+  var rb=document.getElementById('schemaRecommendationBox'),rs=document.getElementById('schemaRecSummary'),rd=document.getElementById('schemaRecDetails');
+  if(rb&&rs&&rd){var ru=function(){var t=rb.textContent||'';rd.hidden=!t.trim()||rb.classList.contains('hidden');rs.textContent='Empfehlung & Begründung zum Laufschema'+(/vorläufig/i.test(t)?' – ⚠ vorläufig':'')};ru();new MutationObserver(ru).observe(rb,{childList:true,subtree:true,characterData:true,attributes:true})}
+  // Punkt 7: Bewertungsblöcke der Auswertung einklappbar, mit Fortschrittsanzeige
+  document.querySelectorAll('[data-panel="6"] .evaluation-section').forEach(function(sec,idx){
+   if(sec.querySelector(':scope > details.eval-fold'))return;var h=sec.querySelector(':scope > h3');if(!h)return;
+   var d=document.createElement('details');d.className='soft-details eval-fold';d.open=(idx===0);var sm=document.createElement('summary');sm.style.fontWeight='700';d.appendChild(sm);
+   while(h.nextSibling)d.appendChild(h.nextSibling);sec.appendChild(d);h.style.display='none';
+   var upd=function(){var sel=d.querySelectorAll('select[data-eval-rating]'),cb=d.querySelectorAll('input[type=checkbox]'),n=0,t='';
+     if(sel.length){sel.forEach(function(x){if(x.value)n++});t=' ('+n+' von '+sel.length+' bewertet)'}else if(cb.length){cb.forEach(function(x){if(x.checked)n++});t=n?' ('+n+' ausgewählt)':''}
+     sm.textContent=h.textContent+t};
+   upd();d.addEventListener('change',upd);d.addEventListener('input',upd);
+  });
+  // Punkt 2: Dauerhaft sichtbare Anzeige, solange die eigene Aufzeichnung läuft
+  var st=document.getElementById('liveTrackStatus'),box=document.getElementById('liveTrackBox');
+  if(st&&box&&!document.getElementById('flTrackChip')){
+   var chip=document.createElement('button');chip.type='button';chip.id='flTrackChip';chip.hidden=true;chip.setAttribute('aria-live','polite');
+   chip.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:950;border:none;border-radius:999px;padding:10px 16px;font-weight:700;font-size:.92rem;color:#fff;background:#b3261e;box-shadow:0 6px 18px rgba(0,0,0,.28);max-width:92vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis';
+   document.body.appendChild(chip);var sichtbar=false;
+   if('IntersectionObserver' in window)new IntersectionObserver(function(e){sichtbar=e[0].isIntersecting;akt()}).observe(box);
+   chip.onclick=function(){var s4=document.querySelector('.step[data-step="4"]');if(s4)s4.click();setTimeout(function(){box.scrollIntoView({behavior:'smooth',block:'start'})},200)};
+   var akt=function(){var t=(st.textContent||'').trim(),laeuft=/zeichnet|läuft|aktiv/i.test(t),pause=/pausiert|pause/i.test(t);
+     if(!(laeuft||pause)||sichtbar){chip.hidden=true;return}
+     var d=(document.getElementById('ltsDuration')||{}).textContent||'',w=(document.getElementById('ltsDistance')||{}).textContent||'';
+     chip.style.background=pause?'#8a6d1f':'#b3261e';
+     chip.textContent=(pause?'⏸ Aufzeichnung pausiert':'● Aufzeichnung läuft')+(d&&d!=='–'?' · '+d.trim():'')+(w&&w!=='–'?' · '+w.trim():'')+'  →';chip.hidden=false};
+   new MutationObserver(akt).observe(st,{childList:true,characterData:true,subtree:true});setInterval(akt,1000);akt();
+  }
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();</script>
+
+<script id="rhs-pwa">/* Offline-Start und Installation – nur bei Aufruf über eine Webadresse; lokal geöffnet bleibt alles unverändert. */
+(function(){if(!/^https?:$/.test(location.protocol))return;try{
+ var l=document.querySelector('link[rel="manifest"]');if(l){l.setAttribute('href','manifest.webmanifest')}else{l=document.createElement('link');l.rel='manifest';l.href='manifest.webmanifest';document.head.appendChild(l)}
+ if(!document.querySelector('link[rel="apple-touch-icon"][href="apple-touch-icon.png"]')){var a=document.createElement('link');a.rel='apple-touch-icon';a.href='apple-touch-icon.png';document.head.appendChild(a)}
+ if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(e){console.warn('Service Worker nicht registriert',e)});
+ if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(function(){});
+}catch(e){}})();</script>
 </body></html>
