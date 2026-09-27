@@ -217,6 +217,17 @@ dialog.fs-dialog { width: min(98vw, 900px); max-width: 98vw; max-height: 96vh; }
 .saved-item small { display: block; color: var(--muted); }
 .saved-item div:last-child { display: flex; gap: 7px; flex-wrap:wrap; }
 .saved-item button { border: 0px; background: rgb(237, 243, 240); border-radius: 9px; padding: 8px; min-height:0; }
+.ct-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:8px 0 10px}
+.ct-tile{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:10px;border:1px solid var(--line);border-radius:12px;background:#fff;cursor:pointer;min-height:92px;font:inherit;color:inherit}
+.ct-tile b{font-size:.92rem;line-height:1.2}.ct-tile small{font-size:.76rem;opacity:.75;line-height:1.25}
+.ct-tile-ico{font-size:1.3rem}
+.ct-tile.active{border:2px solid #e30613;background:#fff5f5}
+@media (max-width:420px){.ct-tiles{grid-template-columns:1fr}.ct-tile{flex-direction:row;align-items:center;min-height:0;gap:10px}.ct-tile small{display:block}}
+.ct-row{display:flex;gap:8px;align-items:center;padding:8px 4px;border-top:1px dashed var(--line)}
+.ct-row.match{background:#fff5f5;border-radius:10px}
+.ct-row svg{flex:0 0 auto}
+.ct-row .ct-name{flex:1 1 auto;min-width:0}
+.ct-map-label{background:rgba(255,255,255,.9);border:1px solid #176fa6;border-radius:6px;padding:1px 5px;font-weight:700;color:#176fa6;box-shadow:none}
 .hidden { display: none !important; }
 dialog { border: 0px; border-radius: 20px; padding: 0px; width: min(560px, 100% - 28px); box-shadow: rgba(0, 0, 0, 0.28) 0px 25px 80px; max-height: 85vh; }
 dialog::backdrop { background: rgba(6, 17, 14, 0.62); backdrop-filter: blur(3px); }
@@ -704,6 +715,63 @@ body.map-fullscreen-active { overflow: hidden; }
 <div class="manual-coords" style="margin-top:8px"><input id="startMgrs" placeholder="oder UTM/MGRS, z. B. 32U NB 34145 85525" style="flex:1 1 220px"/><button class="secondary" id="applyStartMgrs" type="button">MGRS/UTM übernehmen</button></div>
 <p class="inline-message" id="startMgrsMessage" role="status"></p>
 </section>
+<details class="soft-details" id="calTopoDetails">
+<summary>🗺 Suchgebiet aus CalTopo übernehmen (optional)</summary>
+<div class="details-body">
+<p class="hint" style="margin-top:0">Standard bleibt das <b>eigene Einzeichnen</b> auf der Karte weiter unten. Wenn die IuK eine Gebietsdatei verteilt, geht es hier schneller. Bitte einen Weg antippen:</p>
+<div class="ct-tiles" role="tablist">
+  <button type="button" class="ct-tile" data-ct-tab="datei"><span class="ct-tile-ico">📄</span><b>Gebietsdatei der IuK</b><small>Nummer eintippen oder auf der Karte antippen</small></button>
+  <button type="button" class="ct-tile" data-ct-tab="link"><span class="ct-tile-ico">🔗</span><b>Gebiet weitergeben</b><small>Link an Helfer oder anderes Team</small></button>
+  <button type="button" class="ct-tile" data-ct-tab="screenshot"><span class="ct-tile-ico">▧</span><b>Screenshot</b><small>Notlösung ohne Datei</small></button>
+</div>
+
+<div class="ct-panel hidden" data-ct-panel="datei">
+<p class="hint" style="margin:0 0 8px">Die IuK exportiert in CalTopo die ganze Einsatzkarte (Ordner mit Stecknadel → Export, Datei .json) und verteilt sie, z. B. über DRK.Chat oder Teams. Datei auf dem Handy speichern und hier öffnen.</p>
+<label class="dropzone" id="ctDrop" style="min-height:0;padding:12px"><input id="ctFile" type="file"/><span class="drop-icon">⌁</span><span><strong>Gebietsdatei öffnen</strong><small>CalTopo-Export, GeoJSON, KML oder GPX – auch wenn der Messenger die Datei umbenannt hat. Am PC: Datei hierher ziehen.</small></span></label>
+<details class="compact-help-details" style="margin-top:6px"><summary>Inhalt stattdessen einfügen (aus einer anderen App kopiert)</summary><div>
+  <textarea id="ctPaste" rows="3" style="width:100%;box-sizing:border-box" placeholder='{"type":"FeatureCollection", … } oder <kml …>'></textarea>
+  <div class="actions" style="margin-top:6px"><button class="secondary" id="ctPasteBtn" type="button">Eingefügten Inhalt einlesen</button></div>
+</div></details>
+<div id="ctAreaBox" class="hidden" style="margin-top:10px">
+  <p class="inline-message" id="ctAreaHint" role="status" style="margin:0 0 6px"></p>
+  <input id="ctFilter" inputmode="search" enterkeyhint="go" placeholder="Mein Suchgebiet: Nummer oder Name, z. B. 3" style="width:100%;box-sizing:border-box;font-size:1.05rem"/>
+  <div class="actions" style="margin:6px 0"><button class="secondary" id="ctOnMap" type="button">🗺 Alle Gebiete auf der Karte zeigen – eigenes antippen</button></div>
+  <div id="ctAreaList" style="max-height:46vh;overflow:auto"></div>
+</div>
+</div>
+
+<div class="ct-panel hidden" data-ct-panel="link">
+<p class="hint" style="margin:0 0 8px">Gebiet an Helfer oder ein anderes Team schicken: Link erzeugen und per Messenger teilen. Wer ihn antippt, hat das Gebiet sofort im eigenen Flächensuchassistenten. Bei einer Gebietsdatei gibt es zusätzlich bei jedem Gebiet einen „🔗“-Knopf.</p>
+<div class="actions" style="flex-wrap:wrap"><button class="secondary" id="ctShareCurrent" type="button">🔗 Mein aktuelles Suchgebiet teilen</button></div>
+<p class="inline-message" id="ctShareMsg" role="status"></p>
+</div>
+
+<div class="ct-panel hidden" data-ct-panel="screenshot">
+<p class="hint" style="margin:0 0 8px">Nur wenn weder Datei noch Link zu bekommen sind. CalTopo-Screenshot nach Norden ausgerichtet aufnehmen, dann: ① Gebietsgrenze auf dem Screenshot antippen, ② zwei bis drei markante Punkte markieren (Wegkreuzung, Gebäudeecke), ③ dieselben Punkte auf der Online-Karte antippen. Die Karten werden dabei nicht übereinandergelegt.</p>
+<label class="dropzone" style="min-height:0;padding:12px"><input accept="image/*" id="ctShot" type="file"/><span class="drop-icon">▧</span><span><strong>CalTopo-Screenshot auswählen</strong><small>Bleibt lokal auf dem Gerät</small></span></label>
+<div id="ctShotWork" class="hidden" style="margin-top:10px">
+  <div class="actions" style="flex-wrap:wrap;gap:6px;margin-bottom:6px">
+    <button class="primary" data-ct-mode="area" id="ctModeArea" type="button">① Gebietsgrenze antippen</button>
+    <button class="secondary" data-ct-mode="pass" id="ctModePass" type="button">② Passpunkte setzen (2–3)</button>
+  </div>
+  <p class="inline-message" id="ctShotMsg" role="status" style="margin:4px 0 6px"></p>
+  <div style="position:relative;border:1px solid var(--line);border-radius:12px;overflow:auto;max-height:70vh;background:#f4f4f4">
+    <canvas id="ctCanvas" style="display:block;width:100%;touch-action:manipulation;cursor:crosshair"></canvas>
+  </div>
+  <div class="actions" style="flex-wrap:wrap;gap:6px;margin-top:6px">
+    <button class="ghost" id="ctUndo" type="button">↩ Letzten Punkt entfernen</button>
+    <button class="ghost" id="ctReset" type="button">Alles zurücksetzen</button>
+    <button class="primary" id="ctAssign" type="button" disabled>③ Passpunkte auf der Karte zuordnen →</button>
+  </div>
+  <details class="compact-help-details" style="margin-top:8px"><summary>Passpunkte per Koordinate eingeben (statt Antippen)</summary><div>
+    <p class="hint">In CalTopo zeigt ein langer Druck auf einen Punkt dessen Koordinate (USNG/MGRS). Hier eintragen – dann entfällt das Antippen auf der Online-Karte für diesen Punkt.</p>
+    <div id="ctCoordInputs"></div>
+  </div></details>
+  <p class="inline-message" id="ctResultMsg" role="status" style="margin-top:8px"></p>
+</div>
+</div>
+</div>
+</details>
 <details class="soft-details" id="screenshotInputsDetails">
 <summary>Weitere Kartenquellen: Screenshot, eigener Weg &amp; Hundetracker-Track</summary>
 <div class="details-body">
@@ -1569,6 +1637,7 @@ body.map-fullscreen-active { overflow: hidden; }
 <summary>Schritt 2 · Suchgebiet</summary>
 <div class="details-body">
 <ul>
+<li><b>Suchgebiet aus CalTopo (optional):</b> Standard bleibt das eigene Einzeichnen. Im Klappbereich „🗺 Suchgebiet aus CalTopo übernehmen“ drei Wege zum Antippen: <b>📄 Gebietsdatei der IuK</b> – CalTopo-Export der ganzen Einsatzkarte öffnen (auch umbenannte Dateien oder eingefügter Text), dann die Nummer des eigenen Suchgebiets eintippen (Enter übernimmt) oder „Alle Gebiete auf der Karte zeigen“ und das eigene antippen; steht in Schritt 1 z. B. „Suchgebiet 7“, wird Gebiet 7 automatisch vorgeschlagen. <b>🔗 Gebiet weitergeben</b> – Link an Helfer oder ein anderes Team. <b>▧ Screenshot</b> – Notlösung mit Passpunkten. Jedes übernommene Gebiet bleibt an den Ecken korrigierbar.</li>
 <li><b>Start-/EL-Standort:</b> per GPS, Dezimalgrad oder UTM/MGRS erfassen. Er ist der Bezugspunkt für Weg, Laufschema und Fundmeldung. GPS benötigt die Standortfreigabe des Browsers.</li>
 <li><b>Gebiet auf der Karte:</b> OpenStreetMap benötigt Internet, aber kein Konto. Google Maps ist optional und benötigt einen eigenen Schlüssel. Mit „Suchgebiet einzeichnen“ mindestens drei Eckpunkte setzen und anschließend unbedingt „Fläche schließen &amp; übernehmen“ wählen. Damit ist die Fläche sofort – auch offline – für Warnung und Laufschema aktiv. Der Aktualisieren-Knopf übernimmt später verschobene Ecken und lädt optional Höhenwerte.</li>
 <li><b>Ohne digitale Karte:</b> Eine bekannte Start-Ecke per GPS/Koordinate setzen und danach Seitenlängen sowie Richtungen eingeben (Nord 0°, Ost 90°, Süd 180°, West 270°). Ein Papierkartenfoto kann optional online ausgelesen werden; Vorschläge immer prüfen.</li>
@@ -3212,6 +3281,7 @@ async function initLeafletMap(){
 
   map.on('click', (e)=>{
     const {lat,lng}=e.latlng;
+    if(typeof ctKartenKlick==='function' && ctKartenKlick(lat, lng)) return;
     if(mapState.leafletDrawing){ addLeafletDrawPoint(lat, lng); return; }
     placeLeafletMarker(currentMarkerTarget(), lat, lng);
     applyMapClickToField(lat, lng);
@@ -3339,6 +3409,7 @@ async function initGoogleMap(apiKey){
   mapState.googleMap=map;
   map.addListener('click', (e)=>{
     const lat=e.latLng.lat(), lon=e.latLng.lng();
+    if(typeof ctKartenKlick==='function' && ctKartenKlick(lat, lon)) return;
     if(mapState.googleDrawing){ addGoogleDrawPoint(lat, lon); return; }
     placeGoogleMarker(currentMarkerTarget(), lat, lon);
     applyMapClickToField(lat, lon);
@@ -7167,6 +7238,349 @@ function init(){
   showStepIndex(0);
 }
 init();
+/* ============================================================
+   CALTOPO-ÜBERNAHME (Zusatzfunktion, lässt das Einzeichnen unverändert)
+   A) Gebietsdatei mit mehreren Flächen → eigenes Gebiet wählen
+   B) Gebiets-Link (#gebiet=…) → Gebiet wird beim Öffnen übernommen
+   C) Screenshot mit Passpunkten → Grenze auf dem Bild antippen,
+      2–3 Passpunkte auf Bild und Online-Karte zuordnen, Ähnlichkeits-
+      transformation (Maßstab, Drehung, Verschiebung) berechnen.
+   ============================================================ */
+const ct = { areas:[], img:null, mode:'area', areaPx:[], passPx:[], passGeo:[], assigning:-1, overlay:null };
+function ctEsc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+/* --- Polyline-Kodierung (Google-Algorithmus) für kurze Links --- */
+function ctEncode(points){
+  let out='', pLat=0, pLon=0;
+  const enc=v=>{ v=v<0?~(v<<1):(v<<1); let s=''; while(v>=0x20){ s+=String.fromCharCode((0x20|(v&0x1f))+63); v>>=5; } return s+String.fromCharCode(v+63); };
+  points.forEach(p=>{ const la=Math.round(p.lat*1e5), lo=Math.round(p.lon*1e5); out+=enc(la-pLat)+enc(lo-pLon); pLat=la; pLon=lo; });
+  return out;
+}
+function ctDecode(str){
+  const pts=[]; let i=0, lat=0, lon=0;
+  const dec=()=>{ let r=0, sh=0, b; do{ b=str.charCodeAt(i++)-63; r|=(b&0x1f)<<sh; sh+=5; }while(b>=0x20 && i<=str.length); return (r&1)?~(r>>1):(r>>1); };
+  while(i<str.length){ lat+=dec(); lon+=dec(); pts.push({lat:lat/1e5, lon:lon/1e5}); }
+  return pts;
+}
+function ctLinkFuer(points, name){
+  const basis = location.href.split('#')[0].split('?')[0];
+  return basis + '#gebiet=' + encodeURIComponent(ctEncode(cleanSearchAreaPolygon(points))) + (name?'&name='+encodeURIComponent(name):'');
+}
+async function ctTeilen(points, name, msgEl){
+  const url = ctLinkFuer(points, name);
+  const text = 'Suchgebiet'+(name?' „'+name+'“':'')+' für den Flächensuchassistenten – Link öffnen, das Gebiet wird automatisch übernommen:';
+  try{
+    if(navigator.share){ await navigator.share({title:'Suchgebiet'+(name?' '+name:''), text, url}); if(msgEl) msgEl.textContent='Link geteilt.'; return; }
+  }catch(e){ if(e && e.name==='AbortError') return; }
+  try{ await navigator.clipboard.writeText(text+'\n'+url); if(msgEl) msgEl.textContent='Link in die Zwischenablage kopiert – jetzt z. B. im Messenger einfügen.'; showToast('Gebiets-Link kopiert.'); }
+  catch(e){ if(msgEl) msgEl.innerHTML='Link zum Kopieren:<br><textarea readonly style="width:100%;min-height:70px">'+ctEsc(url)+'</textarea>'; }
+}
+async function ctGebietUebernehmen(points, quelle, name){
+  const poly = cleanSearchAreaPolygon(points);
+  if(poly.length<3){ showToast('Das Gebiet hat zu wenige Eckpunkte.'); return false; }
+  if(usableSearchAreaPolygon().length>=3 && !confirm('Es ist bereits ein Suchgebiet vorhanden. Durch das neue Gebiet'+(name?' „'+name+'“':'')+' ersetzen?')) return false;
+  runtime.importedAreaPoints = poly;
+  if(name && (!val('placeName').trim() || val('placeName').trim()===ct.letzterName)) setVal('placeName', name);
+  if(name) ct.letzterName = name;
+  if(typeof ctUebersichtEntfernen==='function') ctUebersichtEntfernen();
+  try{ await ensureAreaMapVisible(); }catch(e){ /* ohne Internet: Gebiet wird trotzdem übernommen, Karte folgt später */ }
+  applyImportedPolygonToMap(poly);
+  runtime.areaSource = quelle;
+  $('#useImportedAreaRow').style.display='';
+  $('#useImportedAsAreaBtn').textContent='⛰ Übernommenes Gebiet prüfen & Höhendaten laden';
+  $('#importedAreaStatus').textContent=(quelle||'Gebiet')+' übernommen'+(name?' („'+name+'“)':'')+'. Bitte auf der Karte prüfen; Ecken lassen sich wie gewohnt verschieben.';
+  updateAreaStatus(); scheduleDraftSave();
+  showToast('Suchgebiet übernommen'+(name?': '+name:'')+'.');
+  return true;
+}
+/* ---------- Auswahl-Kacheln: immer nur ein Weg sichtbar ---------- */
+function ctTab(name){
+  $$('[data-ct-tab]').forEach(b=>b.classList.toggle('active', b.dataset.ctTab===name));
+  $$('[data-ct-panel]').forEach(p=>p.classList.toggle('hidden', p.dataset.ctPanel!==name));
+  ct.tab=name;
+}
+$$('[data-ct-tab]').forEach(b=>b.addEventListener('click',()=>ctTab(ct.tab===b.dataset.ctTab?null:b.dataset.ctTab)));
+/* ---------- A) Gebietsdatei mit vielen Flächen ---------- */
+function ctFlaechenAusDatei(text, filename, mime){
+  const out=[];
+  const coordsToPts = arr => (arr||[]).map(c=>({lon:Number(c[0]), lat:Number(c[1])}));
+  const t=String(text||'').replace(/^\uFEFF/,'').trim();
+  // Inhalt entscheidet, nicht die Dateiendung (Messenger benennen Dateien oft um)
+  if(t.startsWith('{') || t.startsWith('[')){
+    const gj=JSON.parse(t);
+    const feats = Array.isArray(gj) ? gj : gj.type==='FeatureCollection' ? (gj.features||[]) : gj.type==='Feature' ? [gj] : [{geometry:gj, properties:{}}];
+    feats.forEach(f=>{
+      const pr=(f&&f.properties)||{}, g=f&&f.geometry; if(!g) return;
+      const name = String(pr.title || pr.name || pr.Name || pr.number || pr.label || ('Gebiet '+(out.length+1))).trim();
+      const zusatz = [pr.number && pr.title && String(pr.number)!==String(pr.title) ? 'Nr. '+pr.number : '', pr.class && pr.class!=='Shape' ? pr.class : ''].filter(Boolean).join(' · ');
+      if(g.type==='Polygon' && g.coordinates && g.coordinates[0]) out.push({name, zusatz, pts: coordsToPts(g.coordinates[0])});
+      else if(g.type==='MultiPolygon') (g.coordinates||[]).forEach((poly,k)=>{ if(poly&&poly[0]) out.push({name:name+(g.coordinates.length>1?' ('+(k+1)+')':''), zusatz, pts:coordsToPts(poly[0])}); });
+    });
+  } else if(t.startsWith('<')){
+    const doc=new DOMParser().parseFromString(t,'text/xml');
+    if(doc.querySelector('parsererror')) throw new Error('Ungültiges XML');
+    Array.from(doc.getElementsByTagNameNS('*','Placemark')).forEach(pm=>{
+      const nameEl=Array.from(pm.children).find(c=>c.localName==='name');
+      const name=(nameEl&&nameEl.textContent.trim()) || ('Gebiet '+(out.length+1));
+      Array.from(pm.getElementsByTagNameNS('*','Polygon')).forEach((poly,k,arr)=>{
+        const outer=Array.from(poly.getElementsByTagNameNS('*','outerBoundaryIs'))[0]||poly;
+        const c=Array.from(outer.getElementsByTagNameNS('*','coordinates'))[0];
+        if(c) out.push({name: name+(arr.length>1?' ('+(k+1)+')':''), zusatz:'', pts: coordinateTextToPoints(c.textContent)});
+      });
+    });
+  } else throw new Error('Unbekanntes Format');
+  return out.map(a=>({...a, pts:cleanSearchAreaPolygon(a.pts)})).filter(a=>a.pts.length>=3)
+            .sort((a,b)=>a.name.localeCompare(b.name,'de',{numeric:true, sensitivity:'base'}));
+}
+function ctFlaecheHa(pts){
+  if(pts.length<3) return 0;
+  const lat0=pts[0].lat*Math.PI/180, kx=111320*Math.cos(lat0), ky=110540;
+  let a=0; for(let i=0;i<pts.length;i++){ const p=pts[i], q=pts[(i+1)%pts.length]; a+= (p.lon*kx)*(q.lat*ky) - (q.lon*kx)*(p.lat*ky); }
+  return Math.abs(a)/2/10000;
+}
+function ctUmriss(pts, sz){
+  const lat0=pts[0].lat*Math.PI/180, xs=pts.map(p=>p.lon*Math.cos(lat0)), ys=pts.map(p=>-p.lat);
+  const minX=Math.min(...xs), maxX=Math.max(...xs), minY=Math.min(...ys), maxY=Math.max(...ys);
+  const k=(sz-6)/Math.max(maxX-minX, maxY-minY, 1e-9), ox=(sz-(maxX-minX)*k)/2, oy=(sz-(maxY-minY)*k)/2;
+  const d=pts.map((p,i)=>`${i?'L':'M'}${((xs[i]-minX)*k+ox).toFixed(1)},${((ys[i]-minY)*k+oy).toFixed(1)}`).join('')+'Z';
+  return `<svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" aria-hidden="true"><path d="${d}" fill="rgba(227,6,19,.15)" stroke="#e30613" stroke-width="1.5"/></svg>`;
+}
+function ctNorm(s){ return String(s||'').toLowerCase().replace(/suchgebiet|gebiet|sektor|nr\.?|assignment/g,'').replace(/[^a-z0-9äöüß]+/g,' ').trim(); }
+/* Passt ein Gebietsname zum Auftrag aus Schritt 1 („Wo liegt mein Suchgebiet?“)? */
+function ctPasstZumAuftrag(a){
+  const auftrag=ctNorm(val('assignedArea')); const n=ctNorm(a.name);
+  if(!auftrag || !n) return false;
+  return (' '+auftrag+' ').includes(' '+n+' ');
+}
+function ctTreffer(){
+  const f=ctNorm($('#ctFilter').value);
+  if(!f) return ct.areas.map((a,i)=>i);
+  const exakt=ct.areas.map((a,i)=>i).filter(i=>ctNorm(ct.areas[i].name)===f);
+  if(exakt.length) return exakt;
+  return ct.areas.map((a,i)=>i).filter(i=>(' '+ctNorm(ct.areas[i].name+' '+(ct.areas[i].zusatz||''))+' ').includes(f));
+}
+function ctListeRendern(){
+  const box=$('#ctAreaList'), hint=$('#ctAreaHint');
+  $('#ctAreaBox').classList.toggle('hidden', !ct.areas.length && !ct.leseFehler);
+  if(!ct.areas.length){ box.innerHTML=''; hint.textContent=ct.leseFehler||'In dieser Datei wurde keine Fläche gefunden (nur Linien oder Punkte?).'; $('#ctAreaBox').classList.remove('hidden'); return; }
+  const passend = ct.areas.map((a,i)=>i).filter(i=>ctPasstZumAuftrag(ct.areas[i]));
+  hint.innerHTML = `${ct.areas.length} Gebiet(e) in der Datei.` + (passend.length===1 && !$('#ctFilter').value ? ` <b>Passt zu deinem Auftrag: „${ctEsc(ct.areas[passend[0]].name)}“</b> – ist unten markiert.` : ' Nummer eintippen oder auf der Karte antippen.');
+  const ids=ctTreffer();
+  const reihenfolge=[...ids].sort((a,b)=> (passend.includes(b)-passend.includes(a)) || a-b);
+  box.innerHTML = reihenfolge.map(i=>{ const a=ct.areas[i]; return `
+    <div class="ct-row${passend.includes(i)?' match':''}">
+      ${ctUmriss(a.pts,40)}
+      <span class="ct-name"><b>${ctEsc(a.name)}</b><br><small class="hint">${a.zusatz?ctEsc(a.zusatz)+' · ':''}ca. ${ctFlaecheHa(a.pts).toFixed(1)} ha · ${a.pts.length} Ecken</small></span>
+      <button class="primary" data-ct-take="${i}" type="button">Übernehmen</button>
+      <button class="ghost" data-ct-link="${i}" type="button" title="Link für dieses Gebiet teilen" aria-label="Link teilen">🔗</button>
+    </div>`; }).join('') || '<p class="inline-message">Kein Gebiet mit diesem Namen. Schreibweise prüfen oder Karte nutzen.</p>';
+  box.querySelectorAll('[data-ct-take]').forEach(b=>b.addEventListener('click',()=>{ const a=ct.areas[+b.dataset.ctTake]; ctGebietUebernehmen(a.pts,'Gebietsdatei (CalTopo)',a.name); }));
+  box.querySelectorAll('[data-ct-link]').forEach(b=>b.addEventListener('click',()=>{ const a=ct.areas[+b.dataset.ctLink]; ctTeilen(a.pts,a.name,$('#ctAreaHint')); }));
+}
+function ctDateiVerarbeiten(text, name, mime){
+  ct.leseFehler='';
+  try{ ct.areas=ctFlaechenAusDatei(text, name||'', mime||''); }
+  catch(err){ ct.areas=[]; ct.leseFehler='Die Datei konnte nicht gelesen werden. Erwartet wird ein CalTopo-Export (.json), GeoJSON, KML oder GPX.'; }
+  $('#ctFilter').value='';
+  ctListeRendern();
+  if(ct.areas.length){ showToast(ct.areas.length+' Gebiet(e) eingelesen.'); setTimeout(()=>$('#ctFilter').focus({preventScroll:true}),50); }
+}
+$('#ctFile').addEventListener('change', e=>{
+  const f=e.target.files[0]; e.target.value=''; if(!f) return;
+  const r=new FileReader(); r.onload=()=>ctDateiVerarbeiten(r.result, f.name, f.type); r.readAsText(f);
+});
+const ctDrop=$('#ctDrop');
+['dragenter','dragover'].forEach(ev=>ctDrop.addEventListener(ev,e=>{ e.preventDefault(); ctDrop.style.outline='2px dashed #e30613'; }));
+['dragleave','drop'].forEach(ev=>ctDrop.addEventListener(ev,e=>{ e.preventDefault(); ctDrop.style.outline=''; }));
+ctDrop.addEventListener('drop', e=>{ const f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>ctDateiVerarbeiten(r.result,f.name,f.type); r.readAsText(f); });
+$('#ctPasteBtn').addEventListener('click',()=>{ const t=$('#ctPaste').value.trim(); if(!t){ showToast('Bitte zuerst den Inhalt einfügen.'); return; } ctDateiVerarbeiten(t,'eingefuegt',''); });
+$('#ctFilter').addEventListener('input', ctListeRendern);
+$('#ctFilter').addEventListener('keydown', e=>{ if(e.key!=='Enter') return; e.preventDefault(); const ids=ctTreffer(); if(ids.length===1){ const a=ct.areas[ids[0]]; ctGebietUebernehmen(a.pts,'Gebietsdatei (CalTopo)',a.name); } else showToast(ids.length?'Mehrere Treffer – bitte in der Liste wählen.':'Kein Treffer.'); });
+/* Alle Gebiete auf der Karte zeigen – das eigene wird angetippt */
+function ctUebersichtEntfernen(){
+  if(ct.overview){ try{ if(mapState.leafletMap) mapState.leafletMap.removeLayer(ct.overview); }catch(e){} ct.overview=null; }
+  (ct.gPolys||[]).forEach(p=>{ try{ p.setMap(null); }catch(e){} }); ct.gPolys=[];
+  const box=$('#ctPickBox'); if(box) box.remove();
+}
+function ctAuswahlBox(i){
+  let box=$('#ctPickBox');
+  if(!box){ box=document.createElement('div'); box.id='ctPickBox'; box.style.cssText='display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0 8px;padding:8px 10px;border:2px solid #176fa6;border-radius:12px;background:#eef6fb';
+    const frame=$('#areaMap').closest('.direction-frame'); frame.parentNode.insertBefore(box, frame); }
+  if(i==null){ box.innerHTML='<span style="flex:1"><b>Eigenes Suchgebiet auf der Karte antippen.</b></span><button type="button" class="ghost" id="ctPickCancel">Schließen</button>'; }
+  else { const a=ct.areas[i]; box.innerHTML=`<span style="flex:1">Gewählt: <b>${ctEsc(a.name)}</b> <small class="hint">ca. ${ctFlaecheHa(a.pts).toFixed(1)} ha</small></span><button type="button" class="primary" id="ctPickOk">Übernehmen</button><button type="button" class="ghost" id="ctPickCancel">Schließen</button>`;
+    $('#ctPickOk').addEventListener('click',()=>ctGebietUebernehmen(a.pts,'Gebietsdatei (CalTopo)',a.name)); }
+  $('#ctPickCancel').addEventListener('click',ctUebersichtEntfernen);
+}
+$('#ctOnMap').addEventListener('click', async ()=>{
+  if(!ct.areas.length) return;
+  try{ await ensureAreaMapVisible(); }catch(e){ $('#ctAreaHint').textContent='Die Online-Karte ist gerade nicht verfügbar (kein Internet?). Bitte die Nummer eintippen.'; return; }
+  ctUebersichtEntfernen();
+  const ids=ctTreffer();
+  if(mapState.provider==='google' && mapState.googleMap){
+    const bounds=new google.maps.LatLngBounds();
+    ct.gPolys=ids.map(i=>{ const a=ct.areas[i]; const path=a.pts.map(p=>({lat:p.lat,lng:p.lon})); path.forEach(p=>bounds.extend(p));
+      const pg=new google.maps.Polygon({paths:path, strokeColor:'#176fa6', strokeWeight:2, fillColor:'#176fa6', fillOpacity:.08, map:mapState.googleMap});
+      pg.addListener('click',()=>{ ct.gPolys.forEach(x=>x.setOptions({fillOpacity:.08,strokeWeight:2})); pg.setOptions({fillOpacity:.3,strokeWeight:4}); ctAuswahlBox(i); }); return pg; });
+    mapState.googleMap.fitBounds(bounds);
+  } else if(mapState.leafletMap){
+    ct.overview=L.featureGroup().addTo(mapState.leafletMap);
+    ids.forEach(i=>{ const a=ct.areas[i];
+      const pg=L.polygon(a.pts.map(p=>[p.lat,p.lon]),{color:'#176fa6',weight:2,dashArray:'6 4',fillOpacity:.08}).addTo(ct.overview);
+      pg.bindTooltip(a.name,{permanent:true,direction:'center',className:'ct-map-label'});
+      pg.on('click',ev=>{ if(ev&&ev.originalEvent) L.DomEvent.stop(ev.originalEvent); ct.overview.eachLayer(l=>l.setStyle&&l.setStyle({weight:2,fillOpacity:.08,dashArray:'6 4'})); pg.setStyle({weight:4,fillOpacity:.3,dashArray:null}); ctAuswahlBox(i); });
+    });
+    mapState.leafletMap.fitBounds(ct.overview.getBounds(),{padding:[20,20]});
+  }
+  ctAuswahlBox(null);
+  $('#areaMap').scrollIntoView({behavior:'smooth', block:'center'});
+});
+/* ---------- B) Gebiets-Link ---------- */
+$('#ctShareCurrent').addEventListener('click', ()=>{
+  const poly=usableSearchAreaPolygon();
+  if(poly.length<3){ $('#ctShareMsg').textContent='Noch kein Suchgebiet vorhanden – erst einzeichnen oder übernehmen.'; return; }
+  ctTeilen(poly, val('placeName').trim(), $('#ctShareMsg'));
+});
+function ctLinkBeimStartPruefen(){
+  const h=location.hash||''; if(!/^#gebiet=/.test(h)) return;
+  const params=new URLSearchParams(h.slice(1));
+  let pts=[]; try{ pts=ctDecode(params.get('gebiet')||''); }catch(e){}
+  const name=params.get('name')||'';
+  try{ history.replaceState(null,'',location.href.split('#')[0]); }catch(e){}
+  if(cleanSearchAreaPolygon(pts).length<3){ showToast('Der Gebiets-Link ist unvollständig.'); return; }
+  showStepIndex(1);
+  setTimeout(()=>ctGebietUebernehmen(pts,'Gebiets-Link',name),150);
+}
+window.addEventListener('load', ()=>setTimeout(ctLinkBeimStartPruefen, 400));
+window.addEventListener('hashchange', ctLinkBeimStartPruefen);
+/* ---------- C) Screenshot mit Passpunkten ---------- */
+function ctZeichnen(){
+  const cv=$('#ctCanvas'); if(!ct.img) return;
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,cv.width,cv.height); ctx.drawImage(ct.img,0,0);
+  const s=Math.max(1, cv.width/(cv.clientWidth||cv.width)); // Größen in Bildschirmpunkten, unabhängig von der Screenshot-Auflösung
+  if(ct.areaPx.length){
+    ctx.beginPath(); ct.areaPx.forEach((p,i)=> i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));
+    if(ct.areaPx.length>=3){ ctx.closePath(); ctx.fillStyle='rgba(227,6,19,.12)'; ctx.fill(); }
+    ctx.strokeStyle='#e30613'; ctx.lineWidth=3*s; ctx.stroke();
+    ct.areaPx.forEach(p=>{ ctx.beginPath(); ctx.arc(p.x,p.y,5*s,0,2*Math.PI); ctx.fillStyle='#e30613'; ctx.fill(); });
+  }
+  ct.passPx.forEach((p,i)=>{
+    const aktiv = ct.assigning===i;
+    ctx.beginPath(); ctx.arc(p.x,p.y,(aktiv?14:10)*s,0,2*Math.PI); ctx.fillStyle=aktiv?'#ffb400':'#176fa6'; ctx.fill();
+    ctx.lineWidth=2*s; ctx.strokeStyle='#fff'; ctx.stroke();
+    ctx.fillStyle='#fff'; ctx.font=`bold ${Math.round(11*s)}px sans-serif`; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(String(i+1),p.x,p.y);
+    if(ct.passGeo[i]){ ctx.fillStyle='#176fa6'; ctx.font=`bold ${Math.round(12*s)}px sans-serif`; ctx.fillText('✓',p.x+14*s,p.y-12*s); }
+  });
+}
+function ctStatus(){
+  const m=$('#ctShotMsg');
+  if(ct.mode==='area') m.textContent = ct.areaPx.length<3 ? `Ecken der Gebietsgrenze der Reihe nach auf dem Screenshot antippen (${ct.areaPx.length} gesetzt, mind. 3).` : `${ct.areaPx.length} Ecken gesetzt. Weiter mit ② Passpunkte.`;
+  else m.textContent = ct.passPx.length<2 ? `Zwei gut erkennbare Punkte möglichst weit auseinander antippen (z. B. Wegkreuzung, Gebäudeecke). ${ct.passPx.length}/2` : `${ct.passPx.length} Passpunkte gesetzt${ct.passPx.length<3?' – ein dritter Punkt dient als Kontrolle (empfohlen).':'.'}`;
+  $('#ctModeArea').className = ct.mode==='area'?'primary':'secondary';
+  $('#ctModePass').className = ct.mode==='pass'?'primary':'secondary';
+  $('#ctAssign').disabled = !(ct.areaPx.length>=3 && ct.passPx.length>=2);
+  ctKoordFelder();
+}
+function ctKoordFelder(){
+  const box=$('#ctCoordInputs'); if(!box) return;
+  box.innerHTML = ct.passPx.map((p,i)=>`<div class="manual-coords" style="margin-top:6px"><span style="min-width:90px"><b>Passpunkt ${i+1}</b>${ct.passGeo[i]?' ✓':''}</span><input data-ct-coord="${i}" placeholder="32U NB 34145 85525 oder 51.31, 9.49" style="flex:1 1 200px"/><button class="secondary" data-ct-coord-ok="${i}" type="button">Übernehmen</button></div>`).join('') || '<p class="hint">Erst Passpunkte auf dem Screenshot setzen.</p>';
+  box.querySelectorAll('[data-ct-coord-ok]').forEach(b=>b.addEventListener('click',()=>{
+    const i=+b.dataset.ctCoordOk, s=box.querySelector(`[data-ct-coord="${i}"]`).value;
+    let g=parseCoordinateString(s);
+    if(!g){ const m=String(s).replace(/,/g,' ').trim().split(/\s+/).map(Number); if(m.length===2&&m.every(Number.isFinite)&&Math.abs(m[0])<=90) g={lat:m[0],lon:m[1]}; }
+    if(!g||!Number.isFinite(g.lat)){ showToast('Koordinate nicht erkannt.'); return; }
+    ct.passGeo[i]={lat:g.lat, lon:g.lon}; ctZeichnen(); ctKoordFelder(); ctPruefeFertig();
+  }));
+}
+$('#ctShot').addEventListener('change', e=>{
+  const f=e.target.files[0]; e.target.value=''; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{ const img=new Image(); img.onload=()=>{ ct.img=img; ct.areaPx=[]; ct.passPx=[]; ct.passGeo=[]; ct.assigning=-1; ct.mode='area';
+      const cv=$('#ctCanvas'); cv.width=img.naturalWidth; cv.height=img.naturalHeight; $('#ctShotWork').classList.remove('hidden'); $('#ctResultMsg').textContent=''; ctZeichnen(); ctStatus(); }; img.src=r.result; };
+  r.readAsDataURL(f);
+});
+$$('[data-ct-mode]').forEach(b=>b.addEventListener('click',()=>{ ct.mode=b.dataset.ctMode; ctStatus(); }));
+$('#ctCanvas').addEventListener('click', e=>{
+  if(!ct.img) return;
+  const cv=e.currentTarget, rect=cv.getBoundingClientRect();
+  const p={x:(e.clientX-rect.left)*cv.width/rect.width, y:(e.clientY-rect.top)*cv.height/rect.height};
+  if(ct.mode==='area') ct.areaPx.push(p);
+  else { if(ct.passPx.length>=3){ showToast('Höchstens drei Passpunkte.'); return; } ct.passPx.push(p); }
+  ctZeichnen(); ctStatus();
+});
+$('#ctUndo').addEventListener('click',()=>{ if(ct.mode==='area') ct.areaPx.pop(); else { ct.passPx.pop(); ct.passGeo.length=Math.min(ct.passGeo.length, ct.passPx.length); } ctZeichnen(); ctStatus(); });
+$('#ctReset').addEventListener('click',()=>{ ct.areaPx=[]; ct.passPx=[]; ct.passGeo=[]; ct.assigning=-1; ct.mode='area'; $('#ctResultMsg').textContent=''; ctZeichnen(); ctStatus(); });
+function ctNaechsterOffenerPasspunkt(){ for(let i=0;i<ct.passPx.length;i++) if(!ct.passGeo[i]) return i; return -1; }
+function ctAssignHinweis(){
+  const i=ct.assigning;
+  let box=$('#ctAssignBox');
+  if(!box){ box=document.createElement('div'); box.id='ctAssignBox'; box.style.cssText='display:flex;gap:10px;align-items:center;margin:6px 0 8px;padding:8px;border:2px solid #ffb400;border-radius:12px;background:#fff8e6';
+    const frame=$('#areaMap').closest('.direction-frame'); frame.parentNode.insertBefore(box, frame); }
+  if(i<0){ box.remove(); return; }
+  const p=ct.passPx[i], sz=160, cv=document.createElement('canvas'); cv.width=sz; cv.height=sz;
+  const g=cv.getContext('2d'), r=Math.max(ct.img.naturalWidth,ct.img.naturalHeight)/9;
+  g.drawImage($('#ctCanvas'), p.x-r, p.y-r, 2*r, 2*r, 0, 0, sz, sz);
+  g.strokeStyle='#ffb400'; g.lineWidth=3; g.beginPath(); g.arc(sz/2,sz/2,12,0,2*Math.PI); g.stroke();
+  box.innerHTML='';
+  cv.style.cssText='width:110px;height:110px;border-radius:8px;flex:0 0 auto;border:1px solid var(--line)';
+  box.appendChild(cv);
+  const t=document.createElement('div'); t.innerHTML=`<b>Passpunkt ${i+1} von ${ct.passPx.length}</b><br><small>Denselben Punkt jetzt auf der Karte antippen. Vorher heranzoomen – je genauer, desto besser.</small><br><button type="button" class="ghost" id="ctAssignCancel" style="margin-top:6px">Abbrechen</button>`;
+  box.appendChild(t);
+  $('#ctAssignCancel').addEventListener('click',()=>{ ct.assigning=-1; ctAssignHinweis(); ctZeichnen(); setMapMessage(''); });
+}
+$('#ctAssign').addEventListener('click', async ()=>{
+  try{ await ensureAreaMapVisible(); }catch(e){ $('#ctResultMsg').textContent='Die Online-Karte ist gerade nicht verfügbar (kein Internet?). Passpunkte können stattdessen per Koordinate eingegeben werden (Klappbereich oberhalb).'; return; }
+  ct.assigning = ctNaechsterOffenerPasspunkt();
+  if(ct.assigning<0){ ctPruefeFertig(); return; }
+  ctZeichnen(); ctAssignHinweis();
+  setMapMessage('Passpunkt '+(ct.assigning+1)+' auf der Karte antippen.');
+  $('#areaMap').scrollIntoView({behavior:'smooth', block:'center'});
+});
+/* Wird aus den Karten-Klick-Handlern (OSM und Google) aufgerufen; true = Klick verbraucht */
+function ctKartenKlick(lat, lon){
+  if(ct.assigning<0) return false;
+  ct.passGeo[ct.assigning]={lat, lon};
+  ct.assigning = ctNaechsterOffenerPasspunkt();
+  ctZeichnen(); ctKoordFelder();
+  if(ct.assigning>=0){ ctAssignHinweis(); setMapMessage('Passpunkt '+(ct.assigning+1)+' auf der Karte antippen.'); }
+  else { ctAssignHinweis(); setMapMessage(''); ctPruefeFertig(); }
+  return true;
+}
+function ctPruefeFertig(){
+  if(ct.areaPx.length<3 || ct.passPx.length<2) return;
+  if(ct.passPx.some((p,i)=>!ct.passGeo[i])) return;
+  ctBerechnen();
+}
+function ctBerechnen(){
+  /* Lokales metrisches System um den ersten Passpunkt; Bild-y zeigt nach unten → spiegeln. */
+  const lat0=ct.passGeo[0].lat, lon0=ct.passGeo[0].lon, kx=111320*Math.cos(lat0*Math.PI/180), ky=110540;
+  const toM = g=>({x:(g.lon-lon0)*kx, y:(g.lat-lat0)*ky});
+  const toGeo = m=>({lat:lat0+m.y/ky, lon:lon0+m.x/kx});
+  const W = ct.passPx.map(p=>({x:p.x, y:-p.y})), Z = ct.passGeo.map(toM);
+  const n=W.length, wm={x:W.reduce((s,p)=>s+p.x,0)/n, y:W.reduce((s,p)=>s+p.y,0)/n}, zm={x:Z.reduce((s,p)=>s+p.x,0)/n, y:Z.reduce((s,p)=>s+p.y,0)/n};
+  /* Komplexe Ähnlichkeitstransformation z = a·w + b (kleinste Quadrate) */
+  let nr=0, ni=0, d=0;
+  for(let k=0;k<n;k++){ const wx=W[k].x-wm.x, wy=W[k].y-wm.y, zx=Z[k].x-zm.x, zy=Z[k].y-zm.y; nr+=zx*wx+zy*wy; ni+=zy*wx-zx*wy; d+=wx*wx+wy*wy; }
+  if(d<1){ $('#ctResultMsg').textContent='Die Passpunkte liegen zu dicht beieinander – bitte weiter auseinander setzen.'; return; }
+  const ar=nr/d, ai=ni/d, br=zm.x-(ar*wm.x-ai*wm.y), bi=zm.y-(ar*wm.y+ai*wm.x);
+  const T = w=>({x:ar*w.x-ai*w.y+br, y:ar*w.y+ai*w.x+bi});
+  const massstab=Math.hypot(ar,ai), drehung=Math.atan2(ai,ar)*180/Math.PI;
+  const resid = W.map((w,k)=>{ const t=T(w); return Math.hypot(t.x-Z[k].x, t.y-Z[k].y); });
+  const maxRes = n>=3 ? Math.max(...resid) : null;
+  const poly = ct.areaPx.map(p=>toGeo(T({x:p.x, y:-p.y})));
+  const ha=ctFlaecheHa(poly);
+  const warn=[];
+  if(Math.abs(drehung)>8) warn.push(`Der Screenshot erscheint um ca. ${Math.round(drehung)}° gedreht – war die CalTopo-Karte nicht nach Norden ausgerichtet? Dann Passpunkte prüfen.`);
+  if(massstab>20 || massstab<0.05) warn.push(`Ungewöhnlicher Maßstab (${massstab.toFixed(2)} m je Bildpunkt) – sind die Passpunkte vertauscht oder auf der Karte falsch zugeordnet?`);
+  if(maxRes!==null && maxRes>15) warn.push(`Der Kontrollpunkt weicht um ca. ${Math.round(maxRes)} m ab – mindestens ein Passpunkt ist vermutlich ungenau gesetzt.`);
+  ct.lastResult={poly, massstab, drehung, maxRes};
+  $('#ctResultMsg').innerHTML = `<b>Gebiet berechnet:</b> ${poly.length} Ecken, ca. ${ha.toFixed(1)} ha · Maßstab ${(massstab).toFixed(2)} m je Bildpunkt · Drehung ${drehung.toFixed(1)}°`
+    + (maxRes!==null?` · Kontrollpunkt-Abweichung ca. ${Math.round(maxRes)} m`:' · ohne Kontrollpunkt (3. Passpunkt empfohlen)')
+    + (warn.length?`<br><span style="color:#b00020">⚠ ${warn.map(ctEsc).join('<br>⚠ ')}</span>`:'')
+    + `<br><button class="primary" id="ctUebernehmen" type="button" style="margin-top:6px">Als Suchgebiet übernehmen</button> <button class="ghost" id="ctNeuZuordnen" type="button" style="margin-top:6px">Passpunkte neu zuordnen</button>`;
+  $('#ctUebernehmen').addEventListener('click',()=>ctGebietUebernehmen(poly,'CalTopo-Screenshot (Passpunkte)', val('placeName').trim()));
+  $('#ctNeuZuordnen').addEventListener('click',()=>{ ct.passGeo=[]; ctZeichnen(); ctKoordFelder(); $('#ctResultMsg').textContent=''; $('#ctAssign').click(); });
+}
+
 </script>
 <script id="ux-compact-helper">(function(){function foldHeading(h){if(!h||h.closest("details")||h.dataset.uxFolded)return;var level=Number(h.tagName.slice(1)),parent=h.parentNode;if(!parent)return;var d=document.createElement("details");d.className="ux-help-details";var s=document.createElement("summary");s.textContent=h.textContent.trim();d.appendChild(s);h.dataset.uxFolded="1";var n=h.nextSibling;h.remove();while(n){var next=n.nextSibling;if(n.nodeType===1&&/^H[1-6]$/.test(n.tagName)&&Number(n.tagName.slice(1))<=level)break;d.appendChild(n);n=next;}parent.insertBefore(d,n);}function init(){var patterns=[/allgemeine grundsätze/i,/so liest du/i,/rassetypische hinweise/i,/lebensphase.*lernfähigkeit/i,/eigenwahrnehmung.*selbstcheck/i,/trainingsaufbau-checkliste/i,/was die app kann/i,/bedienungsanleitung/i,/tastenkürzel/i];Array.from(document.querySelectorAll("h2,h3,h4")).filter(function(h){return patterns.some(function(r){return r.test(h.textContent||"")})}).forEach(foldHeading);}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();})();</script>
 
