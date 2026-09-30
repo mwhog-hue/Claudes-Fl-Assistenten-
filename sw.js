@@ -1,7 +1,7 @@
 /* RH-Flächensuchassistent – Service Worker: startet die App auch ohne Internet (z. B. im Funkloch).
    Die Daten liegen im lokalen Gerätespeicher, nicht in diesem Cache.
    Bei jeder neuen Version CACHE_VERSION erhöhen. */
-const CACHE_VERSION = 'flaechensuche-2.8.0';
+const CACHE_VERSION = 'flaechensuche-2.9.0';
 const DATEIEN = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 /* Kartenbibliothek (Leaflet + Zeichenwerkzeug): wird mitgespeichert, damit die Karte offline zumindest startet
    und zuletzt angesehene Kacheln aus dem Browser-Cache anzeigen kann. Kacheln selbst benötigen weiterhin Internet. */
