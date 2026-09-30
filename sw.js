@@ -1,7 +1,7 @@
 /* RH-Flächensuchassistent – Service Worker: startet die App auch ohne Internet (z. B. im Funkloch).
    Die Daten liegen im lokalen Gerätespeicher, nicht in diesem Cache.
    Bei jeder neuen Version CACHE_VERSION erhöhen. */
-const CACHE_VERSION = 'flaechensuche-2.5.0';
+const CACHE_VERSION = 'flaechensuche-2.8.0';
 const DATEIEN = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 /* Kartenbibliothek (Leaflet + Zeichenwerkzeug): wird mitgespeichert, damit die Karte offline zumindest startet
    und zuletzt angesehene Kacheln aus dem Browser-Cache anzeigen kann. Kacheln selbst benötigen weiterhin Internet. */
@@ -23,13 +23,14 @@ self.addEventListener('fetch', e=>{
   const u = new URL(e.request.url);
   if(u.origin===location.origin){
     // App-Dateien: Netz zuerst (Aktualisierungen kommen an), sonst Cache
-    e.respondWith(fetch(e.request).then(r=>{ const k=r.clone(); caches.open(CACHE_VERSION).then(c=>c.put(e.request,k)); return r; })
+    // Nur erfolgreiche Antworten speichern, damit eine Fehlerseite (z. B. 404 bei GitHub) nie die funktionierende Fassung ersetzt.
+    e.respondWith(fetch(e.request).then(r=>{ if(r.ok){ const k=r.clone(); caches.open(CACHE_VERSION).then(c=>c.put(e.request,k)); } return r; })
       .catch(()=>caches.match(e.request).then(r=>r||caches.match('./index.html'))));
     return;
   }
   if(u.host==='cdnjs.cloudflare.com'){
     // Bibliotheken: Cache zuerst (Versionen sind in der Adresse festgeschrieben); auch Tesseract wird so nach erstem Gebrauch offline verfügbar
-    e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(n=>{ const k=n.clone(); caches.open(CACHE_VERSION).then(c=>c.put(e.request,k)); return n; })));
+    e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(n=>{ if(n.ok){ const k=n.clone(); caches.open(CACHE_VERSION).then(c=>c.put(e.request,k)); } return n; })));
   }
   // Wetter, Höhen, Geocoding, Kartenkacheln, KI-Anbieter und OSRM laufen bewusst am Service Worker vorbei.
 });
